@@ -28,16 +28,15 @@ to contact the authors by email for a preview of the final repository contents.
 The following instructions assume that you want to build and use a force/torque sensor 
 together with ROS. If so, please proceed as follows:
 
-0. read this README and check the overview paper
+0. read this README and check the overview paper.
 
 1. clone this repository into your catkin workspace, then build your workspace:
-
-'''
+```
 cd ~/catkin_ws/src
 git clone github.com/TAMS-Group/tams_printed_ft
 cd ~/catkin_ws
 catkin_make
-'''
+```
 
 2. check the OpenSCAD and/or meshes subdirectories and select the sensor that you need.
 Run OpenSCAD and edit the existing parameters or completely modify the sensor geometry.
