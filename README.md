@@ -23,6 +23,64 @@ to contact the authors by email for a preview of the final repository contents.
 
 ## Getting started
 
+The following instructions assume that you want to build and use a force/torque sensor 
+together with ROS. If so, please proceed as follows:
+
+1. clone this repository into your catkin workspace, then build your workspace:
+
+'''
+cd ~/catkin_ws/src
+git clone github.com/TAMS-Group/tams_printed_ft
+cd ~/catkin_ws
+catkin_make
+'''
+
+2. check the OpenSCAD and/or meshes subdirectories and select the sensor that you need.
+Run OpenSCAD and edit the existing parameters or completely modify the sensor geometry.
+Export the individual parts to STL meshes.
+
+3. Use your favorite slicing software to convert all needed mechanical parts into G-Code
+for your 3D-printer, then start printing the parts.
+
+4. Check that you have the required electronics components (optical sensors, microcontroller,
+pullup-resistors, capacitors, ...) and the mechanical components (screws and nuts).
+
+5. Assemble the mechanical parts, insert the optical sensors or ready-made circuit boards,
+and wire the optical sensors to the microcontroller/amplifier boards.
+
+6. Connect the microcontroller to the host computer and upload/flash the corresponding
+firmware. Modify the firmware according to your needs. Once powered up and flashed,
+the microcontroller should start sending out raw sensor data, 
+using the selected communication protocol (e.g. I2C/TWI, SPI, UART, USB),
+baudrate (e.g. 115200 baud), etc.
+
+7. Edit and update the launch files to match your setup (e.g. name of the root tf frame,
+name of your robots and F/T sensor frames, sample rates, comunication device, etc.).
+
+8. Run the ROS driver for the selected sensor, and check that the raw data looks ok:
+'''
+roscore
+roslaunch tams_printed_ft bottle_ft.launch  [device:=/dev/ttyUSB2 ...]
+rosrun plotjuggler PlotJuggler -> start streaming -> /printed_ft/rawdata -> plot
+'''
+
+9. Record calibration data
+'''
+
+'''
+
+10. Restart the sensor to use the recently created calibration file
+
+
+
+
+
+
+
+
+
+
+
 ## Prototype sensors
 
 
