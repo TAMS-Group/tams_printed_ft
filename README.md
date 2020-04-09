@@ -77,6 +77,9 @@ What is in here? The basic structure of this repository is a common ROS catkin p
 
 
 * `config`: ROS configuration files, including example sensor calibration YAML files and rviz / plotjuggler configurations;
+* `doc`: Misc documentation, including the overview paper, datasheets for the optical sensors, Arduino pinouts, and
+  some images/screenshots;
+* `firmware`: Arduino/Teensy source code for the sensor firmware; copy (or symlink) into your `~/Arduino/` folder to use.
 * `launch`: ROS launch files for the sensor drivers and utilities;
 * `meshes`: this subdirectory holds STL meshes ready for 3D printing for some of the sensors, as well as Collada .dae files needed for the ROS URDF models;
 * `openscad`: Configurable OpenSCAD source code for some of our sensors. Most of the files will render an assembled model of the complete sensor, but individual parts can be enabled or disabled using the provided boolean variables. This directory also provides automated export scripts to generate 3D STL meshes for the individual 3D printable files;
@@ -85,16 +88,21 @@ What is in here? The basic structure of this repository is a common ROS catkin p
 * `urdf`: ROS URDF models for the sensors;
 * `package.xml` and `CMakeLists.txt`: the common ROS catkin package description and build files.
 
-
-
-
-
-
-
+Note that there are no header files (yet).
 
 ## Prototype sensors
 
-
+* !["Robocup soccer foot sensor"](/doc/images/foot.jpg)
+  A foot force sensor for a Robocup soccer humanoid;
+* !["2-DOF sensor module"](/doc/images/2dof.jpg)
+  A convenient sensor module built from two fork-type photointerrupters, used as a basic components
+  in several of our designs;
+* !["spacemouse six-axis F/T sensor"](/doc/images/spacemouse.png) 
+  A small six-sensor six-axis force/torque sensor with very light force limit (about ~4N);
+* !["adjustable six-axis F/T sensor"](/doc/images/adjustable.jpg)
+   A large six-axis force/torque sensor, using four 2-DOF sensor modules and grub-screws for initial zero-ing;
+* !["bottle-ft ring-type six-axis F/T sensor"](/doc/images/bottle-ft.jpg)
+   A ring-type six-axis force/torque sensor, using four 2-DOF sensor modules.
 
 
 ## OpenSCAD designs and 3D printing
