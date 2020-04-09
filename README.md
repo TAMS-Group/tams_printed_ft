@@ -15,6 +15,8 @@ for 3D printability using common FFF/FDM (fused filament fabrication / fused dep
 be hand-wired without problem, and a working 6-axis force/torque sensor can be built for less
 than 20 US dolloars, plus a few hours of 3D printing.
 
+!["3D printed f/t sensors"](/doc/images/teaer.jpg)
+
 ## Note: stub while paper under review
 
 This repository is currently a stub, as the journal paper describing the general approach
@@ -101,14 +103,14 @@ Note that there are no header files (yet).
 
 * !["Robocup soccer foot sensor"](/doc/images/foot.jpg)
   A foot force sensor for a Robocup soccer humanoid;
-* !["2-DOF sensor module"](/doc/images/2dof.jpg)
+* !["2-DOF sensor module"](/doc/images/2DOF-sensor-module.jpg)
   A convenient sensor module built from two fork-type photointerrupters, used as a basic components
   in several of our designs;
 * !["spacemouse six-axis F/T sensor"](/doc/images/spacemouse.png) 
   A small six-sensor six-axis force/torque sensor with very light force limit (about ~4N);
-* !["adjustable six-axis F/T sensor"](/doc/images/adjustable.jpg)
+* !["adjustable six-axis F/T sensor"](/doc/images/adjustable-base-ring.jpg)
    A large six-axis force/torque sensor, using four 2-DOF sensor modules and grub-screws for initial zero-ing;
-* !["bottle-ft ring-type six-axis F/T sensor"](/doc/images/bottle-ft.jpg)
+* !["bottle-ft ring-type six-axis F/T sensor"](/doc/images/bottle-ft-pouring.jpg)
    A ring-type six-axis force/torque sensor, using four 2-DOF sensor modules.
 
 
