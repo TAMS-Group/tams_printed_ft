@@ -71,8 +71,19 @@ rosrun plotjuggler PlotJuggler -> start streaming -> /printed_ft/rawdata -> plot
 
 10. Restart the sensor to use the recently created calibration file
 
+## Directory Structure
+
+What is in here? The basic structure of this repository is a common ROS catkin package, with a few extra directories for the OpenSCAD models and Arduino firmware:
 
 
+* ```config''': ROS configuration files, including example sensor calibration YAML files and rviz / plotjuggler configurations;
+* ```launch''': ROS launch files for the sensor drivers and utilities;
+* ```meshes''': this subdirectory holds STL meshes ready for 3D printing for some of the sensors, as well as Collada .dae files needed for the ROS URDF models;
+* ```openscad''': Configurable OpenSCAD source code for some of our sensors. Most of the files will render an assembled model of the complete sensor, but individual parts can be enabled or disabled using the provided boolean variables. This directory also provides automated export scripts to generate 3D STL meshes for the individual 3D printable files;
+* ```ndoes''': ROS Python driver nodes for the different sensors, as well as calibration scripts and plotting utilities;
+* ```src''': ROS C++ source files, currently the calibration-helper tool and the radial-pattern generator;
+* ```urdf''': ROS URDF models for the sensors;
+* ```package.xml''' and ```CMakeLists.txt''': the common ROS catkin package description and build files.
 
 
 
