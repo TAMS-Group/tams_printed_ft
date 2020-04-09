@@ -26,6 +26,8 @@ to contact the authors by email for a preview of the final repository contents.
 The following instructions assume that you want to build and use a force/torque sensor 
 together with ROS. If so, please proceed as follows:
 
+0. read this README and check the overview paper
+
 1. clone this repository into your catkin workspace, then build your workspace:
 
 '''
@@ -58,16 +60,20 @@ baudrate (e.g. 115200 baud), etc.
 name of your robots and F/T sensor frames, sample rates, comunication device, etc.).
 
 8. Run the ROS driver for the selected sensor, and check that the raw data looks ok:
-'''
+```
 roscore
 roslaunch tams_printed_ft bottle_ft.launch  [device:=/dev/ttyUSB2 ...]
 rosrun plotjuggler PlotJuggler -> start streaming -> /printed_ft/rawdata -> plot
-'''
+```
 
 9. Record calibration data
-'''
-
-'''
+```
+roslaunch tams_printed_ft bottle_ft_calibration_helper.launch
+run experiment ... press control-c
+python3 scripts/linear_bottle.py 
+check calibration quality, select best algorithm, ...
+cp /tmp/bottle_ft_huber_1e-4.yaml config/bottle_ft_calibration.yaml
+```
 
 10. Restart the sensor to use the recently created calibration file
 
@@ -83,7 +89,8 @@ What is in here? The basic structure of this repository is a common ROS catkin p
 * `launch`: ROS launch files for the sensor drivers and utilities;
 * `meshes`: this subdirectory holds STL meshes ready for 3D printing for some of the sensors, as well as Collada .dae files needed for the ROS URDF models;
 * `openscad`: Configurable OpenSCAD source code for some of our sensors. Most of the files will render an assembled model of the complete sensor, but individual parts can be enabled or disabled using the provided boolean variables. This directory also provides automated export scripts to generate 3D STL meshes for the individual 3D printable files;
-* `ndoes`: ROS Python driver nodes for the different sensors, as well as calibration scripts and plotting utilities;
+* `nodes`: ROS Python driver nodes for the different sensors, as well as calibration scripts and plotting utilities;
+* `scripts`: misc shell scripts
 * `src`: ROS C++ source files, currently the calibration-helper tool and the radial-pattern generator;
 * `urdf`: ROS URDF models for the sensors;
 * `package.xml` and `CMakeLists.txt`: the common ROS catkin package description and build files.
