@@ -153,14 +153,30 @@ and calibration is NOT performed on the microcontrollers.
 
 ## URDF models
 
-We also provide ROS URDF models for some of the sensors.
+We also provide ROS URDF models for the sensors.
 The modeling approach combines the actual (high-res) 3D meshes also used for 3D printing
 for the visual model, while a simplified geometric model (cylinder, box) is used for
 the sensor collision model.
 
-For the small sensors, the tilt under load cannot be ignored, and is modeled 
+The sensor model consists of several separate parts, each with their corresponding
+TF frames, and linked by joints. Typically, the base frame of the sensor is centered
+at the bottom of the static (robot-side) sensor mesh, the sensing joint is in the
+middle of the sensor, and another tool-mount frame is provided at the upper end
+of the (tool-side) sensor mesh.
+We also provide the required yaml controller configuration files to enable
+joint_states and wrench output from Gazebo simulation.
+
+The screenshot below shows a collection of URDF sensor models as visualized in rviz:
+
+!["URDF models of the 3D printed f/t sensors in rviz"](/doc/images/screen-rviz-printed-ft-all-sensors.png)
+
+For the small sensors, the tilt under load cannot be ignored, and should be modeled 
 using a generic a six-DOF joint between the base (robot side) and swiveling (tool side)
-parts of the sensor. Corresponding yaml configuration files are provided for Gazebo.
+parts of the sensor. 
+However, at the moment only single-axis revolute joints are used in the models;
+Gazebo will still calculate the complete wrench, but only roll is actuated, 
+pitch and yaw remain at zero.
+
 
 ## Sensor calibration
 
