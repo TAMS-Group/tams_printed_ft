@@ -184,7 +184,7 @@ Gazebo will still calculate the complete wrench, but only one axis is actuated
 (e.g., roll), while the other axes (e.g. pitch and yaw) remain at zero.
 
 For the real sensor, publishing estimated deflection as `joint_states` message
-is planned, but ahd not been implemented yet. Instead, our sensor launch scripts 
+is planned, but has not been implemented yet. Instead, our sensor launch scripts 
 also run `static_transform_publisher` nodes that publish the required transformation
 (from sensor base part to deflecting sensor tool part) 
 to guarantee a connected tf tree along the kinematic chain. 
