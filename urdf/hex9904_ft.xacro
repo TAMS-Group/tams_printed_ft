@@ -1,0 +1,137 @@
+<?xml version="1.0" ?>
+<robot 
+       xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="hex9904_ft">
+
+
+  <!-- basic ROS URDF model of the "hex9904_20_ft" (aka Spacemouse) six-axis force/torque 
+       sensor, using six Vishay 9904 reflex-type sensors, with selected "hat".
+
+       The sensor is modeled using the two parts only, namely
+       - base plate and ground plate (fixed) with sensors and microcontrollers,
+       - "hat" or upper ring (moving) mounting the tool.
+
+       By default, there is a static link in-between base-plate and tool-plate,
+       but this could be changed to an (unacted) 6-DOF joint if you want to
+       simulate realistic deflection under load. In this case you will also
+       need a proper Gazebo physics simulation setup with controller configuration.
+
+       Sensor size:
+       d_baseplate = d_groundplate = d_elastic = 42mm
+       h_baseplate = 8.0 mm
+       h_groundplate = 13.0 mm
+       h_hat = h_elastic = 20.0 mm
+       combined base+ground mesh aligned at bottom of baseplate
+       mass = about 150 grams
+
+       The origin of the model is at the bottom of the *ground_plate*.
+       Adjust the transformations from robot and to tool accordingly.
+   -->
+
+<xacro:macro name="hex9904_ft" params="name hat hat_height hat_mass" >
+
+  <link name="${name}_${hat}_ft_hat">
+    <inertial>
+      <origin xyz="0 0 ${hat_height/2}" />
+      <mass value="${hat_mass}" />
+      <inertia  ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.00005" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" />
+        <material name="dummy" >
+          <color rgba="0.5 0.9 0.5 1.0" />
+        </material>
+        <geometry>
+          <mesh filename="package://tams_printed_ft/meshes/hex9904_hat_${hat}.dae" scale="0.001 0.001 0.001" />
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 ${hat_height}" />
+        <geometry>
+          <cylinder radius="${0.045/2}" length="${hat_height}" />
+        </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference="${name}_${hat}_ft_hat">
+      <material>Gazebo/White</material>
+      <turnGravityOff>false</turnGravityOff>
+      <selfCollide>false</selfCollide>
+      <!-- kp: stiffness kd: damping mu1, mu2: friction -->
+      <mu1>100.0</mu1>
+      <mu2>100.0</mu2>
+      <kp>1000000.0</kp>
+      <kd>1.0</kd>
+  </gazebo>
+  
+  <link name="${name}_${hat}_ft">
+    <!-- base ring size: diameter 43mm, height 22+23mm. -->
+    <inertial>
+      <origin xyz="0 0 ${(0.013+0.008)/2}" />
+      <mass value="0.2" />
+      <inertia  ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.00005" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0.013" /> <!-- mesh centered at bottom of base plate -->
+        <material name="dummy" >
+          <color rgba="0.7 0.4 0.4 1.0" />
+        </material> 
+        <geometry>
+          <mesh filename="package://tams_printed_ft/meshes/hex9904_baseplate_groundplate.dae" scale="0.001 0.001 0.001" />
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 ${(0.013+0.008)/2}" />
+        <geometry>
+          <cylinder radius="${0.042/2+0.002}" length="0.021" />
+        </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference="${name}_${hat}_ft">
+      <material>Gazebo/Black</material>
+      <turnGravityOff>false</turnGravityOff>
+      <selfCollide>false</selfCollide>
+      <!-- kp: stiffness kd: damping mu1, mu2: friction -->
+      <mu1>100.0</mu1>
+      <mu2>100.0</mu2>
+      <kp>1000000.0</kp>
+      <kd>1.0</kd>
+  </gazebo>
+
+  <!-- maybe try: type=floating, no axis required -->
+  <joint name="${name}_${hat}_ft_sensor_joint" type="revolute">
+    <parent link="${name}_${hat}_ft" />
+    <child link="${name}_${hat}_ft_hat" />
+    <origin xyz="0 0 ${0.013+0.001}" rpy="0 0 0" />
+
+    <axis xyz="1 0 0" rpy="0 0 0" />
+    <dynamics damping="1.01" friction="0.05" />
+    <limit lower="-0.02" upper="0.02" effort="100" velocity="1" />
+    <safety_controller soft_lower_limit="-0.001" soft_upper_limit="0.001" k_position="1" k_velocity="1" />
+  </joint>
+
+  <transmission name="${name}_${hat}_ft_sensor_joint_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${name}_${hat}_ft_sensor_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="${name}_${hat}_ft_sensor_joint_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <link name="${name}_${hat}_ft_tool_mount" />
+
+  <!-- <link name="${name}_tool_mount" /> -->
+  <joint name="${name}_${hat}_ft_tool_mount_joint" type="fixed">
+    <parent link="${name}_${hat}_ft_hat" />
+    <child link="${name}_${hat}_ft_tool_mount" />
+    <origin xyz="0 0 ${hat_height}" rpy="0 0 0" />
+  </joint>
+
+</xacro:macro>
+
+</robot>

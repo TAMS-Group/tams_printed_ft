@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<robot 
+       xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="ft_OSRF_sensor">
+
+<xacro:macro name="ft_control_plugin" params="name">
+  <gazebo>
+    <plugin name="${name}_gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <!-- <robotParam>${name}_description</robotParam> --> <!-- URDF name on param server -->
+      <robotNamespace>${name}</robotNamespace>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+      <legacyModeNS>true</legacyModeNS>
+    </plugin>
+  </gazebo>
+</xacro:macro>
+
+
+  <!-- The ft_sensor plugin -->
+<xacro:macro name="ft_sensor_plugin" params="name joint rate topic">
+
+  <gazebo reference="${name}_${joint}">
+    <provideFeedback>true</provideFeedback>
+    <!-- NOTE: http://gazebosim.org/tutorials/?tut=ros_urdf 
+        implicitSpringDamper bool
+        springStiffness bool     double in N/m
+        springReference double
+        might be worthing trying...
+    -->
+  </gazebo>
+
+  <gazebo>
+    <plugin name="${name}_sensor" filename="libgazebo_ros_ft_sensor.so">
+      <!-- <robotParam>${name}_description</robotParam> --> <!-- URDF name on param server -->
+      <updateRate>1000.0</updateRate>
+      <topicName>${name}/${topic}</topicName> 
+      <jointName>${name}_${joint}</jointName>
+      <noise>
+        <type>gaussian</type>
+        <mean>0.0</mean>
+        <stddev>0.003</stddev> 
+      </noise>
+    </plugin>
+  </gazebo>
+</xacro:macro>
+
+</robot>

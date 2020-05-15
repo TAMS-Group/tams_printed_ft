@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- ATi nano17 f/t sensor model for ROS and Gazebo; modified from:
+       url = https://github.com/CentroEPiaggio/force-torque-sensor.git
+	   - Nano17: http://www.ati-ia.com/products/ft/ft_models.aspx?id=Nano17 
+  -->
+
+	<!-- Common tools: PI, inertias of a cuboid and cylinder -->
+	<xacro:property name="M_PI" value="3.1415926535897931"/>
+
+	<xacro:macro name="cuboid_inertia_def" params="width height length mass">
+	  <inertia ixx="${mass * (height * height + length * length) / 12}"
+			 iyy="${mass * (width * width + length * length) / 12}"
+			 izz="${mass * (width * width + height * height) / 12}"
+			 ixy="0" iyz="0" ixz="0"/>
+	</xacro:macro>
+
+	<xacro:macro name="cylinder_inertia_def" params="radius length mass">
+	  <inertia ixx="${mass * (3 * radius * radius + length * length) / 12}"
+			 iyy="${mass * radius* radius / 2}"
+			 izz="${mass * (3 * radius * radius + length * length) / 12}"
+			 ixy="0" iyz="0" ixz="0"/>
+	</xacro:macro>
+
+	<xacro:macro name="ati_nano17_ft" params="name" >
+    <link name="${name}">
+			<inertial>
+				<mass value="0.00907"/>
+				<origin xyz="0 0 0.00725"  />
+				<xacro:cylinder_inertia_def radius="0.085" length="0.0145" mass="0.00907"/>
+			</inertial>
+			<visual>
+				<!-- origin xyz="0 0 0.00725" rpy="0 0 0"/ -->
+				<origin xyz="0 0 0" rpy="0 0 0"/>
+        <material name="ati_nano17_silver">
+          <color rgba="0.9 0.9 0.6 1.0" />
+        </material>
+				<geometry>
+					<mesh filename="package://tams_printed_ft/meshes/ati_nano17.dae"/>
+					<!-- cylinder radius="0.0085" length="0.0145"/ -->
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 0 0.00725" rpy="0 0 0"/>
+				<geometry>
+					<cylinder radius="0.0085" length="0.0145"/>
+				</geometry>
+			</collision>
+    </link>
+
+    <gazebo reference="${name}">
+      <material>Gazebo/Silver</material>
+      <turnGravityOff>false</turnGravityOff>
+      <selfCollide>false</selfCollide>
+      <!-- kp: stiffness kd: damping mu1, mu2: friction -->
+      <mu1>100.0</mu1>
+      <mu2>100.0</mu2>
+      <kp>1000000.0</kp>
+      <kd>1.0</kd>
+   </gazebo>
+
+    <link name="${name}_sensor_frame">
+		  <origin xyz="0 0 0.0145" rpy="0 0 0"/>
+	  </link>
+
+    <!-- type=floating, no axis required? -->
+    <joint name="${name}_sensor_joint" type="revolute">
+      <parent link="${name}" />
+      <child link="${name}_sensor_frame" />
+      <origin xyz="0 0 ${0.011}" rpy="0 0 0" />
+
+      <axis xyz="1 0 0" rpy="0 0 0" />
+      <dynamics damping="1.01" friction="0.05" />
+      <limit lower="-0.001" upper="0.001" effort="100" velocity="1" />
+    </joint>
+
+    <transmission name="${name}_sensor_joint_transmission">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${name}_sensor_joint">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${name}_sensor_joint_motor">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+    <link name="${name}_tool_mount" />
+
+    <joint name="${name}_tool_mount_joint" type="fixed">
+      <parent link="${name}_sensor_frame" />
+      <child link="${name}_tool_mount" />
+      <origin xyz="0 0 ${0.0035}" rpy="0 0 0" /> 
+    </joint>
+
+	</xacro:macro>
+
+
+  <!-- 17mm x 5m height cylinder -->
+	<xacro:macro name="nano17_tool_plate">
+			<inertial>
+				<mass value="0.002"/>
+				<origin xyz="0 0 0.0025"  />
+				<xacro:cylinder_inertia_def radius="0.085" length="0.005" mass="0.002"/>
+			</inertial>
+			<visual>
+				<!-- origin xyz="0 0 0.00725" rpy="0 0 0"/ -->
+				<origin xyz="0 0 0.0025" rpy="0 0 0"/>
+				<geometry>
+					<cylinder radius="0.0085" length="0.005"/>
+				</geometry>
+			</visual>
+			<collision>
+				<origin xyz="0 0 0.0025" rpy="0 0 0"/>
+				<geometry>
+					<cylinder radius="0.0085" length="0.005"/>
+				</geometry>
+			</collision>
+	</xacro:macro>
+
+</robot>

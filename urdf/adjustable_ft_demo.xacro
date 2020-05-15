@@ -1,0 +1,64 @@
+<?xml version="1.0" ?>
+<robot 
+       xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="adjustable_ft_demo">
+
+
+  <!-- basic ROS URDF model of the "adjustable-ft" six-axis force/torque sensor.
+       The sensor is modeled using the two main only, namely upper-plate (robot side)
+       and base-ring (tool side including spiral spring). The original 3D meshes
+       are used for visualization, and two simple cylinders are used as collision
+       models.
+
+       By default, there is a static link in-between base-plate and tool-plate,
+       but this could be changed to an (unacted) 6-DOF joint if you want to
+       simulate realistic deflection under load. In this case you will also
+       need a proper Gazebo physics simulation setup with controller configuration.
+
+       Sensor size:
+       d_outer2 = 104mm, h_inner = 18, h_outer = 15,  (base ring = tool plate)
+       h_inner = 14 (upper plate = robot side)
+       mass = ???
+
+       The sensor URDF with base-plate, and tool-plate connected by a fixed joint.
+       Note that the origin of the model is at the bottom of the *base_plate*,
+       basically in the center of the sensor.
+       Adjust the transformations from robot and to tool accordingly.
+   -->
+
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ft_payload.xacro" />
+  <xacro:include filename="$(find tams_printed_ft)/urdf/adjustable_ft.xacro" />
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ft_sensor.xacro" />
+
+  <link name="world" />
+
+  <xacro:ft_control_plugin name="adjustable_ft" />
+
+  <xacro:ft_sensor_plugin 
+     name="adjustable_ft"
+     joint="sensor_joint" 
+     rate="200"
+     topic="wrench" >
+  </xacro:ft_sensor_plugin>
+
+  <xacro:adjustable_ft name="adjustable_ft" />
+
+  <joint name="world_adjustable_ft_joint" type="fixed">
+    <parent link="world" />
+    <child link="adjustable_ft" />
+    <origin xyz="0 0 1" rpy="0 0 0" />
+  </joint>
+
+  <!-- single payload for testing -->
+
+  <xacro:ft_payload_sphere  name="m130g" mass="0.130" diameter="0.13">
+    <cog_origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:ft_payload_sphere>
+
+  <joint name="adjustable_ft_payload_joint" type="fixed">
+    <parent link="adjustable_ft_tool_ring" />
+    <child link="m130g" />
+    <origin xyz="1 0.1 0" rpy="0 0 0" />
+  </joint>
+
+</robot>

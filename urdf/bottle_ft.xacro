@@ -1,0 +1,211 @@
+<?xml version="1.0" ?>
+<robot 
+       xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="bottle_ft">
+
+
+  <!-- basic ROS URDF model of the "bottle-ft" six-axis force/torque sensor.
+
+       The sensor is modeled using the three main parts only, namely
+       - upper ring (moving) with sensors and electronics, carrying the bottle
+       - outer ring (fixed to handle) with spiral spring
+       - grasp handle (fixed to outer ring)
+
+       By default, there is a static link in-between base-plate and tool-plate,
+       but this could be changed to an (unacted) 6-DOF joint if you want to
+       simulate realistic deflection under load. In this case you will also
+       need a proper Gazebo physics simulation setup with controller configuration.
+
+       Sensor size:
+       d_base_outer = 114mm,   d_inner = 70.0
+       h_base_ring  = 18 mm
+       h_upper_ring = 7 (+1 mm for circular "notch"), effective 8mm
+       d_outer = 90mm (upper ring), but plus sensor modules: 108mm
+       mass = about 150 grams
+
+       The sensor URDF with base-plate, and tool-plate connected by a fixed joint.
+       Note that the origin of the model is at the bottom of the *base_plate*,
+       basically in the center of the sensor.
+       Adjust the transformations from robot and to tool accordingly.
+   -->
+
+
+<xacro:macro name="bottle_ft" params="name" >
+  
+  <link name="${name}">
+    <!-- base ring height: outer 15mm, inner 18mm, fins~22mm, diameter 114mm -->
+    <inertial>
+      <origin xyz="0 0 ${0.016/2}" /> <!-- CoG is lower than total height -->
+      <mass value="0.2" />
+      <inertia  ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.00005" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" />
+      <material name="bottle_ft_gray" >
+        <color rgba="0.3 0.3 0.3 1.0" />
+      </material> 
+      <geometry>
+        <mesh filename="package://tams_printed_ft/meshes/bottle-six-axis-ft-v2-base-ring-h15.dae" scale="0.001 0.001 0.001" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 ${0.015/2}" /> <!-- outer height, 3mm gap to upper ring -->
+      <geometry>
+        <cylinder radius="${0.114/2}" length="0.015" />
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference="${name}">
+    <material>Gazebo/Black</material>
+    <turnGravityOff>false</turnGravityOff>
+    <selfCollide>false</selfCollide>
+    <!-- kp: stiffness kd: damping mu1, mu2: friction -->
+    <mu1>100.0</mu1>
+    <mu2>100.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>1.0</kd>
+  </gazebo>
+
+  <link name="bottle_ft_upper_ring">
+    <!-- effective height 8mm, outer diameter 108mm -->
+    <inertial>
+      <origin xyz="0 0 ${0.008/2}" />
+      <mass value="0.10" />
+      <inertia  ixx="0.00002" ixy="0" ixz="0" iyy="0.00002" iyz="0" izz="0.00001" />
+    </inertial>
+    <visual>
+      <!-- note: this mesh is translated by (0,0,0.018) from the origin -->
+      <origin xyz="0 0 -0.018" />
+      <material name="silver" >
+        <color rgba="0.9 0.9 0.9 1.0" />
+      </material> 
+      <geometry>
+        <mesh filename="package://tams_printed_ft/meshes/bottle-six-axis-ft-v2-upper-ring-sensor-modules-arduino.dae" scale="0.001 0.001 0.001" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 ${0.008/2}" />
+      <geometry>
+        <cylinder radius="${0.108/2}" length="0.008" />
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference="bottle_ft_upper_ring">
+      <material>Gazebo/White</material>
+      <turnGravityOff>false</turnGravityOff>
+      <selfCollide>false</selfCollide>
+      <!-- kp: stiffness kd: damping mu1, mu2: friction -->
+      <mu1>100.0</mu1>
+      <mu2>100.0</mu2>
+      <kp>1000000.0</kp>
+      <kd>1.0</kd>
+  </gazebo>
+
+  <!-- type=floating, no axis required -->
+  <joint name="${name}_sensor_joint" type="revolute">
+    <parent link="${name}" />
+    <child link="${name}_upper_ring" />
+    <origin xyz="0 0 ${0.018}" rpy="0 0 0" />
+    <axis xyz="1 0 0" rpy="0 0 0" />
+    <dynamics damping="1.01" friction="0.05" />
+    <limit lower="-0.02" upper="0.02" effort="100" velocity="1" />
+    <safety_controller soft_lower_limit="-0.001" soft_upper_limit="0.001" k_position="1" k_velocity="1" />
+  </joint>
+
+  <transmission name="${name}_sensor_joint_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${name}_sensor_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="${name}_sensor_joint_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <link name="bottle_ft_grasp_handle">
+    <!-- main diameter of grasp handle: 70 + 2*2.5 = 75mm -->
+    <inertial>
+      <origin xyz="0 0 -0.035" />
+      <mass value="0.15" />
+      <inertia  ixx="0.00002" ixy="0" ixz="0" iyy="0.00002" iyz="0" izz="0.00001" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" />
+      <material name="bottle_ft_gray" >
+        <color rgba="0.2 0.2 0.2 1.0" />
+      </material> 
+      <geometry>
+       <mesh filename="package://tams_printed_ft/meshes/bottle-six-axis-ft-v2-grasp-handle-70mm.dae" scale="0.001 0.001 0.001" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" />
+      <geometry>
+        <mesh filename="package://tams_printed_ft/meshes/bottle-six-axis-ft-v2-grasp-handle-70mm.dae" scale="0.001 0.001 0.001" />
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference="bottle_ft_grasp_handle">
+    <material>Gazebo/Black</material>
+    <turnGravityOff>false</turnGravityOff>
+    <selfCollide>false</selfCollide>
+    <!-- kp: stiffness kd: damping mu1, mu2: friction -->
+    <mu1>100.0</mu1>
+    <mu2>100.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>1.0</kd>
+  </gazebo>
+
+  <joint name="bottle_ft_grasp_handle_joint" type="fixed">
+    <parent link="bottle_ft" />
+    <child link="bottle_ft_grasp_handle" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+
+</xacro:macro>
+
+
+<xacro:macro name="bottle_ft_bottle_500ml" params="name" >
+
+  <!-- <link name="${name}" /> -->
+  <link name="${name}">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.520" />
+      <inertia  ixx="0.00002" ixy="0" ixz="0" iyy="0.00002" iyz="0" izz="0.00001" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.1" />
+      <material name="bottle_plastic" >
+        <color rgba="0.6 0.9 0.7 1.0" />
+      </material> 
+      <geometry>
+       <mesh filename="package://tams_printed_ft/meshes/bottle_500ml.dae" scale="0.97 0.97 0.97" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" />
+      <geometry>
+        <cylinder radius="${0.07/2}" length="0.2" />
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference="${name}">
+    <material>Gazebo/White</material>
+    <turnGravityOff>false</turnGravityOff>
+    <selfCollide>false</selfCollide>
+    <!-- kp: stiffness kd: damping mu1, mu2: friction -->
+    <mu1>100.0</mu1>
+    <mu2>100.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>1.0</kd>
+  </gazebo>
+
+</xacro:macro>
+
+</robot>

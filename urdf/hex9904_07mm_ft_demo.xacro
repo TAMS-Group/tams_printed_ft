@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<robot 
+       xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="hex9904_07mm_ft_demo">
+
+
+  <!-- Gazebo demo of the hex9904 sensor with 07mm hat. -->
+
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ft_payload.xacro" />
+  <xacro:include filename="$(find tams_printed_ft)/urdf/hex9904_ft.xacro" />
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ft_sensor.xacro" />
+
+  <link name="world" />
+
+  <xacro:ft_control_plugin name="hex9904_07mm_ft" />
+
+  <xacro:ft_sensor_plugin 
+     name="hex9904_07mm_ft"
+     joint="sensor_joint" 
+     rate="200"
+     topic="wrench" >
+  </xacro:ft_sensor_plugin>
+
+  <xacro:hex9904_ft name="hex9904" hat="07mm"  hat_mass="0.075" hat_height="0.007" />
+
+  <xacro:ft_payload_sphere  name="m500g" mass="0.5" diameter="0.1">
+    <cog_origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:ft_payload_sphere>
+
+  <!-- mount sensor in world, and payload on sensor -->
+
+  <joint name="world_hex9904_07mm_ft_joint" type="fixed">
+    <parent link="world" />
+    <child link="hex9904_07mm_ft" />
+    <origin xyz="0.5 0 0.2" rpy="0 0 0" />
+  </joint>
+
+  <joint name="hex9904_07mm_ft_payload_joint" type="fixed">
+    <parent link="hex9904_07mm_ft_tool_mount" />
+    <child link="m500g" />
+    <origin xyz="0.2 0.01 0" rpy="0 0 0" />
+  </joint>
+
+</robot>

@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<robot 
+       xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="ati_nano17_ft_demo">
+
+
+  <!-- basic Gazebo demo of the ati_nano17_ft sensor.  -->
+
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ft_payload.xacro" />
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ft_sensor.xacro" />
+
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ati_nano17_ft.xacro" />
+
+  <link name="world" />
+
+  <xacro:ft_control_plugin name="ati_nano17_ft" />
+
+  <xacro:ft_sensor_plugin 
+     name="ati_nano17_ft"
+     joint="sensor_joint" 
+     rate="200"
+     topic="wrench" >
+  </xacro:ft_sensor_plugin>
+
+  <xacro:ati_nano17_ft name="ati_nano17_ft" />
+
+  <joint name="world_ati_nano17_ft_joint" type="fixed">
+    <parent link="world" />
+    <child link="ati_nano17_ft" />
+    <origin xyz="0.5 0.5 0.5" rpy="0 0 0" />
+  </joint>
+
+  <!-- single payload for testing -->
+
+  <xacro:ft_payload_sphere  name="m50g" mass="0.05" diameter="0.01">
+    <cog_origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:ft_payload_sphere>
+
+  <joint name="ati_nano17_ft_payload_joint" type="fixed">
+    <parent link="ati_nano17_ft_tool_mount" />
+    <child link="m50g" />
+    <origin xyz="0 0.1 0.05" rpy="0 0 0" />
+  </joint>
+
+</robot>

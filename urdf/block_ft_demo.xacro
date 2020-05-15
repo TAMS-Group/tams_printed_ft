@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+<robot 
+       xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="block_ft_demo">
+
+
+  <!-- basic Gazebo demo of the block_ft sensor.  -->
+
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ft_payload.xacro" />
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ft_sensor.xacro" />
+
+  <xacro:include filename="$(find tams_printed_ft)/urdf/block_ft.xacro" />
+
+  <link name="world" />
+
+  <xacro:ft_control_plugin name="block_ft" />
+
+  <xacro:ft_sensor_plugin 
+     name="block_ft"
+     joint="sensor_joint" 
+     rate="200"
+     topic="wrench" >
+  </xacro:ft_sensor_plugin>
+
+  <xacro:block_ft name="block_ft" />
+
+  <xacro:block_ft_m3207_adapter  name="block_ft_m3207_adapter_plate" />
+
+  <joint name="world_block_ft_m3207_adapter_joint" type="fixed">
+    <parent link="world" />
+    <child link="block_ft_m3207_adapter_plate" />
+    <origin xyz="1 1 ${0.3-0.01}" rpy="0 0 0" /> 
+  </joint>
+
+  <joint name="world_block_ft_joint" type="fixed">
+    <parent link="world" />
+    <child link="block_ft" />
+    <origin xyz="1 1 0.3" rpy="0 0 0" />
+  </joint>
+
+  <!-- single payload for testing -->
+
+  <xacro:ft_payload_sphere  name="m11kg" mass="1.100" diameter="0.17">
+    <cog_origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:ft_payload_sphere>
+
+  <joint name="block_ft_payload_joint" type="fixed">
+    <parent link="block_ft_tool_mount" />
+    <child link="m11kg" />
+    <origin xyz="0.1 0.1 0" rpy="0 0 0" />
+  </joint>
+
+</robot>

@@ -1,0 +1,258 @@
+<?xml version="1.0" ?>
+<robot 
+       xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="all_ft_demo">
+
+   <!-- combined URDF that instantiates all printed_ft sensors in one model -->
+
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ft_payload.xacro" />
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ft_sensor.xacro" />
+
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ati_nano17_ft.xacro" /> 
+
+  <xacro:include filename="$(find tams_printed_ft)/urdf/adjustable_ft.xacro" />
+  <xacro:include filename="$(find tams_printed_ft)/urdf/block_ft.xacro" />
+  <xacro:include filename="$(find tams_printed_ft)/urdf/bottle_ft.xacro" />
+  <xacro:include filename="$(find tams_printed_ft)/urdf/hex9904_ft.xacro" />
+  <xacro:include filename="$(find tams_printed_ft)/urdf/pushing_box_ft.xacro" />
+
+  
+  <link name="world" />
+
+
+  <!-- adjustable ft with 1.5kg payload -->
+
+  <xacro:ft_control_plugin name="adjustable_ft" />
+
+  <xacro:ft_sensor_plugin 
+     name="adjustable_ft"
+     joint="sensor_joint" 
+     rate="200"
+     topic="wrench" >
+  </xacro:ft_sensor_plugin>
+
+  <xacro:adjustable_ft name="adjustable_ft" />
+
+  <joint name="world_adjustable_ft_joint" type="fixed">
+    <parent link="world" />
+    <child link="adjustable_ft" />
+    <origin xyz="0 0 0.1" rpy="0 0 0" />
+  </joint>
+
+  <xacro:ft_payload_sphere  name="m1500g" mass="1.5" diameter="0.04">
+    <cog_origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:ft_payload_sphere>
+
+  <joint name="adjustable_ft_payload_joint" type="fixed">
+    <parent link="adjustable_ft_tool_ring" />
+    <child link="m1500g" />
+    <origin xyz="0.1 0 0" rpy="0 0 0" />
+  </joint>
+
+
+  <!-- ATi nano17 reference sensor with 200g payload -->
+
+  <xacro:ft_control_plugin name="ati_nano17_ft" />
+
+  <xacro:ft_sensor_plugin 
+     name="ati_nano17_ft"
+     joint="sensor_joint" 
+     rate="200"
+     topic="wrench" >
+  </xacro:ft_sensor_plugin>
+
+  <xacro:ati_nano17_ft name="ati_nano17_ft" />
+
+  <joint name="world_ati_nano17_ft_joint" type="fixed">
+    <parent link="world" />
+    <child link="ati_nano17_ft" />
+    <origin xyz="0 0.2 0.2" rpy="0 0 0" />
+  </joint>
+
+  <xacro:ft_payload_sphere  name="m200g" mass="0.2" diameter="0.01">
+    <cog_origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:ft_payload_sphere>
+
+  <joint name="ati_nano17_ft_payload_joint" type="fixed">
+    <parent link="ati_nano17_ft_tool_mount" />
+    <child link="m200g" />
+    <origin xyz="0 0.01 0.02" rpy="0 0 0" />
+  </joint>
+
+
+  <!-- bottle_ft sensor with 450g payload  -->
+
+  <xacro:ft_control_plugin name="bottle_ft" />
+
+  <xacro:ft_sensor_plugin 
+     name="bottle_ft"
+     joint="sensor_joint" 
+     rate="200"
+     topic="wrench" >
+  </xacro:ft_sensor_plugin>
+
+  <xacro:bottle_ft name="bottle_ft" />
+
+  <joint name="world_bottle_ft_joint" type="fixed">
+    <parent link="world" />
+    <child link="bottle_ft" />
+    <origin xyz="0.2 0.2 0.3" rpy="0 0.4 3.0" />
+  </joint>
+
+  <xacro:bottle_ft_bottle_500ml  name="bottle_500ml" />
+
+  <joint name="bottle_ft_bottle_joint" type="fixed">
+    <parent link="bottle_ft_upper_ring" />
+    <child link="bottle_500ml" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+
+
+
+  <!-- block_ft sensor with 500g payload  -->
+
+  <xacro:ft_control_plugin name="block_ft" />
+
+  <xacro:ft_sensor_plugin 
+     name="block_ft"
+     joint="sensor_joint" 
+     rate="200"
+     topic="wrench" >
+  </xacro:ft_sensor_plugin>
+
+  <xacro:block_ft name="block_ft" />
+
+  <xacro:block_ft_m3207_adapter  name="block_ft_m3207_adapter_plate" />
+
+  <joint name="world_block_ft_m3207_adapter_joint" type="fixed">
+    <parent link="world" />
+    <child link="block_ft_m3207_adapter_plate" />
+    <origin xyz="0 0.4 ${0.2-0.01}" rpy="0 0 0" /> 
+  </joint>
+
+  <joint name="world_block_ft_joint" type="fixed">
+    <parent link="world" />
+    <child link="block_ft" />
+    <origin xyz="0 0.4 0.2" rpy="0 0 0" />
+  </joint>
+
+  <xacro:ft_payload_sphere  name="m1100g" mass="1.100" diameter="0.03">
+    <cog_origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:ft_payload_sphere>
+
+  <joint name="block_ft_payload_joint" type="fixed">
+    <parent link="block_ft_tool_mount" />
+    <child link="m1100g" />
+    <origin xyz="0.03 0.05 0" rpy="0 0 0" />
+  </joint>
+
+
+  <!-- Gazebo demo of the hex9904 sensor with 07mm hat and 73g payload. -->
+
+  <xacro:ft_control_plugin name="hex9904_07mm_ft" />
+
+  <xacro:ft_sensor_plugin 
+     name="hex9904_07mm_ft"
+     joint="sensor_joint" 
+     rate="200"
+     topic="wrench" >
+  </xacro:ft_sensor_plugin>
+
+  <xacro:hex9904_ft name="hex9904" hat="07mm"  hat_mass="0.075" hat_height="0.007" />
+
+  <xacro:ft_payload_sphere  name="m73g" mass="0.073" diameter="0.01">
+    <cog_origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:ft_payload_sphere>
+
+  <joint name="world_hex9904_07mm_ft_joint" type="fixed">
+    <parent link="world" />
+    <child link="hex9904_07mm_ft" />
+    <origin xyz="0.2 0 0.2" rpy="0.3 0.5 0" />
+  </joint>
+
+  <joint name="hex9904_07mm_ft_payload_joint" type="fixed">
+    <parent link="hex9904_07mm_ft_tool_mount" />
+    <child link="m73g" />
+    <origin xyz="0 0.01 0.1" rpy="0 0 0" />
+  </joint>
+
+
+  <!-- Gazebo demo of the hex9904 sensor with 10mm hat and 156g payload. -->
+
+  <xacro:ft_control_plugin name="hex9904_10mm_ft" />
+
+  <xacro:ft_sensor_plugin 
+     name="hex9904_10mm_ft"
+     joint="sensor_joint" 
+     rate="200"
+     topic="wrench" >
+  </xacro:ft_sensor_plugin>
+
+  <xacro:hex9904_ft name="hex9904" hat="10mm"  hat_mass = "0.110" hat_height="0.01" />
+
+  <xacro:ft_payload_sphere  name="m156g" mass="0.156" diameter="0.02">
+    <cog_origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:ft_payload_sphere>
+
+  <joint name="world_hex9904_10mm_ft_joint" type="fixed">
+    <parent link="world" />
+    <child link="hex9904_10mm_ft" />
+    <origin xyz="0.3 0 0.20" rpy="0.4 0.3 0" />
+  </joint>
+
+  <joint name="hex9904_10mm_ft_payload_joint" type="fixed">
+    <parent link="hex9904_10mm_ft_tool_mount" />
+    <child link="m156g" />
+    <origin xyz="0.03 -0.03 0" rpy="0 0 0" />
+  </joint>
+
+
+  <!-- Gazebo demo of the hex9904 sensor with 20mm hat. -->
+  
+  <xacro:ft_control_plugin name="hex9904_20mm_ft" />
+
+  <xacro:ft_sensor_plugin 
+     name="hex9904_20mm_ft"
+     joint="sensor_joint" 
+     rate="200"
+     topic="wrench" >
+  </xacro:ft_sensor_plugin>
+
+  <xacro:hex9904_ft name="hex9904" hat="20mm"  hat_mass = "0.150" hat_height="0.02" />
+
+  <xacro:ft_payload_sphere  name="m777g" mass="0.377" diameter="0.03">
+    <cog_origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:ft_payload_sphere>
+
+  <joint name="world_hex9904_20mm_ft_joint" type="fixed">
+    <parent link="world" />
+    <child link="hex9904_20mm_ft" />
+    <origin xyz="0.4 0 0.20" rpy="0 0 0" />
+  </joint>
+
+  <joint name="hex9904_20mm_ft_payload_joint" type="fixed">
+    <parent link="hex9904_20mm_ft_tool_mount" />
+    <child link="m777g" />
+    <origin xyz="0 0.03 0.05" rpy="0 0 0" />
+  </joint>
+
+  <!-- basic ROS+gazebo demo of the "pushing_box-ft" -->
+
+  <xacro:ft_control_plugin name="pushing_box_ft" />
+
+  <xacro:ft_sensor_plugin 
+     name="pushing_box_ft"
+     joint="sensor_joint" 
+     rate="200"
+     topic="wrench" >
+  </xacro:ft_sensor_plugin>
+
+  <xacro:pushing_box_ft name="pushing_box_ft" />
+
+  <joint name="world_pushing_box_ft_joint" type="fixed">
+    <parent link="world" />
+    <child link="pushing_box_ft" />
+    <origin xyz="0 0.6 0" rpy="0 0 0" />
+  </joint>
+
+</robot>

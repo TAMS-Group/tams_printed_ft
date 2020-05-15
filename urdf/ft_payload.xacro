@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<robot 
+       xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="ft_paylaod">
+
+<!-- configurable payload for static force/torque tests -->
+
+
+<xacro:macro name="ft_payload_sphere" params="name mass *cog_origin diameter">
+  <link name="${name}">
+    <inertial>
+      <xacro:insert_block name="cog_origin" />
+      <mass value="${mass}" />
+      <inertia  ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001" />
+    </inertial>
+    <visual>
+      <xacro:insert_block name="cog_origin" />
+      <material name="ft_payload_gold" > 212,175,55
+        <color rgba="${212/255} ${175/255} ${55/255} 1.0" />
+      </material> 
+      <geometry>
+         <sphere radius="${diameter/2}" />
+      </geometry>
+    </visual>
+    <collision>
+      <xacro:insert_block name="cog_origin" />
+      <geometry>
+         <sphere radius="${diameter/2}" />
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference="${name}">
+      <material>Gazebo/Gold</material>
+      <turnGravityOff>false</turnGravityOff>
+      <selfCollide>false</selfCollide>
+      <!-- kp: stiffness kd: damping mu1, mu2: friction -->
+      <mu1>100.0</mu1>
+      <mu2>100.0</mu2>
+      <kp>1000000.0</kp>
+      <kd>1.0</kd>
+  </gazebo>
+</xacro:macro>
+
+</robot>

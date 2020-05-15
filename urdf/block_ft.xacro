@@ -1,0 +1,167 @@
+<?xml version="1.0" ?>
+<robot 
+       xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="block_ft">
+
+  <!-- basic ROS URDF model of the "block-ft" six-axis force/torque sensor.
+       The sensor is modeled using two main parts only, namely base-plate
+       (with elastic member attached, robot side), and tool-plate (tool side).
+       The original 3D meshes are used for visualization, and two simple 
+       boxes are used as collision models.
+
+       mass = estimated only, needs to be measured (with electronics inside)
+
+       Sensor size:
+       d_outer = 56 mm 
+       h_base_and_elastic 18.0mm
+       h_cover_ring_and_spacer_plate 8.0mm (with z-offset 18.0)
+
+       sunrise_m3207_plate: d=74mm h=10.0mm (mesh origin at z=-10)
+   -->
+
+<xacro:macro name="block_ft" params="name" >
+
+  <link name="${name}">
+    <inertial>
+      <origin xyz="0 0 ${0.009}" />
+      <mass value="0.15" />
+      <inertia  ixx="0.0002" ixy="0" ixz="0" iyy="0.0002" iyz="0" izz="0.0002" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" />
+        <material name="green_pla_filament" >
+          <color rgba="0.5 0.9 0.5 1.0" />
+        </material> 
+        <geometry>
+          <mesh filename="package://tams_printed_ft/meshes/block_ft_base_and_elastic.dae" scale="0.001 0.001 0.001" />
+        </geometry>
+      </visual>
+      <collision>
+        <!-- 2mm shorter to provide visual gap between base and tool parts -->
+        <origin xyz="0 0 ${0.008}" />
+        <geometry>
+          <box size="0.056 0.056 0.016" />
+        </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference="${name}">
+      <material>Gazebo/Green</material>
+      <turnGravityOff>false</turnGravityOff>
+      <selfCollide>false</selfCollide>
+      <!-- kp: stiffness kd: damping mu1, mu2: friction -->
+      <mu1>100.0</mu1>
+      <mu2>100.0</mu2>
+      <kp>1000000.0</kp>
+      <kd>1.0</kd>
+  </gazebo>
+
+  <link name="${name}_tool_plate">
+    <inertial>
+      <origin xyz="1 0 ${0.008/2}" />
+      <mass value="0.05" />
+      <inertia  ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00002" />
+    </inertial>
+    <visual>
+        <origin xyz="0 0 -0.018" /> <!-- compensate mesh z-offset -->
+        <material name="red_pla_filament" >
+          <color rgba="0.9 0.1 0.1 1.0" />
+        </material> 
+        <geometry>
+          <mesh filename="package://tams_printed_ft/meshes/block_ft_cover_ring_and_pattern_plate.dae" scale="0.001 0.001 0.001" />
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 ${0.008/2}" />
+        <geometry>
+          <box size="0.056 0.056 0.008" />
+        </geometry>
+      </collision>
+  </link>
+
+  <gazebo reference="${name}_tool_plate">
+      <material>Gazebo/Red</material>
+      <turnGravityOff>false</turnGravityOff>
+      <selfCollide>false</selfCollide>
+      <!-- kp: stiffness kd: damping mu1, mu2: friction -->
+      <mu1>100.0</mu1>
+      <mu2>100.0</mu2>
+      <kp>1000000.0</kp>
+      <kd>1.0</kd>
+  </gazebo>
+
+  <!-- type=floating, no axis required -->
+  <joint name="${name}_sensor_joint" type="revolute">
+    <parent link="${name}" />
+    <child link="${name}_tool_plate" />
+    <origin xyz="0 0 ${0.018}" rpy="0 0 0" />
+
+    <axis xyz="1 0 0" rpy="0 0 0" />
+    <dynamics damping="1.01" friction="0.05" />
+    <limit lower="-0.02" upper="0.02" effort="100" velocity="1" />
+    <safety_controller soft_lower_limit="-0.001" soft_upper_limit="0.001" k_position="1" k_velocity="1" /> 
+  </joint>
+
+  <transmission name="${name}_sensor_joint_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${name}_sensor_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="${name}_sensor_joint_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <link name="${name}_tool_mount" /> 
+
+  <joint name="${name}_tool_mount_joint" type="fixed">
+    <parent link="${name}_tool_plate" />
+    <child link="${name}_tool_mount" />
+    <origin xyz="0 0 ${0.008}" rpy="0 0 0" />
+  </joint>
+
+</xacro:macro>
+
+
+<!-- model of the d=74 h=10 two-part inner/outer adapter plate for the Sunrise M3207 sensor -->
+<xacro:macro name="block_ft_m3207_adapter" params="name" >
+
+  <link name="${name}">
+    <inertial>
+      <origin xyz="0 0 0.005" />
+      <mass value="0.10" />
+      <inertia  ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0002" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0.01" /> <!-- mesh origin is at the top -->
+        <material name="red_pla_filament" >
+          <color rgba="0.9 0.5 0.5 1.0" />
+        </material> 
+        <geometry>
+          <mesh filename="package://tams_printed_ft/meshes/block_ft_sunrise_mounting_plate_74x10.dae" scale="0.001 0.001 0.001" />
+        </geometry>
+      </visual>
+      <collision>
+        <!-- 2mm shorter to provide visual gap between base and tool parts -->
+        <origin xyz="0 0 0.005" />
+        <geometry>
+          <cylinder radius="${0.074/2}" length="0.01" />
+        </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference="${name}">
+      <material>Gazebo/Gray</material>
+      <turnGravityOff>false</turnGravityOff>
+      <selfCollide>false</selfCollide>
+      <!-- kp: stiffness kd: damping mu1, mu2: friction -->
+      <mu1>100.0</mu1>
+      <mu2>100.0</mu2>
+      <kp>1000000.0</kp>
+      <kd>1.0</kd>
+  </gazebo>
+
+</xacro:macro>
+
+</robot>

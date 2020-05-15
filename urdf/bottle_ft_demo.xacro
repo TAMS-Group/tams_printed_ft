@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+<robot 
+       xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="bottle_ft_demo">
+
+
+  <!-- basic Gazebo demo of the bottle_ft sensor.  -->
+
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ft_payload.xacro" />
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ft_sensor.xacro" />
+
+  <xacro:include filename="$(find tams_printed_ft)/urdf/bottle_ft.xacro" />
+
+  <link name="world" />
+
+  <xacro:ft_control_plugin name="bottle_ft" />
+
+  <xacro:ft_sensor_plugin 
+     name="bottle_ft"
+     joint="sensor_joint" 
+     rate="200"
+     topic="wrench" >
+  </xacro:ft_sensor_plugin>
+
+  <xacro:bottle_ft name="bottle_ft" />
+
+  <joint name="world_bottle_ft_joint" type="fixed">
+    <parent link="world" />
+    <child link="bottle_ft" />
+    <origin xyz="0.3 0.3 0.5" rpy="0 0 0" />
+  </joint>
+
+  <!-- single payload for testing -->
+
+  <xacro:bottle_ft_bottle_500ml  name="bottle_500ml" /> 
+
+  <joint name="world_bottle_ft_bottle_fixed_joint" type="fixed">
+    <parent link="bottle_ft_upper_ring" />
+    <child link="bottle_500ml" />
+    <origin xyz="0 0 0" rpy="0 0 0" /> 
+  </joint>
+
+</robot>

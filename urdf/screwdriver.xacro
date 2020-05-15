@@ -1,0 +1,107 @@
+<?xml version="1.0" ?>
+<robot 
+       xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="screwdriver">
+
+  <xacro:include filename="$(find instrumented_screwdriver)/urdf/atag_octogon.xacro" />
+
+  <!-- note that our apriltag 16h5 textures include the white border around
+       the actual pattern (80x80 pixels total, with 60x60 pixels pattern).
+  -->
+
+  <!-- actual screwdriver, diameter 60mm (octogon) 57mm (cylinder), 44mm (handle),
+       total length about 142mm (without screw bit). 
+       Overall mass is 204 grams (with medium-size Lipo) and atag octogon.
+       Only a dummy tool bit (cylinder) is provided in this model.
+   -->
+  <link name="screwdriver">
+      <inertial>
+        <!-- center of mass near the battery -->
+        <origin xyz="0 0 0.055" />
+        <mass value="0.20" />
+        <inertia  ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.00005" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0.0" />
+        <material name="dummy" >
+          <color rgba="0.5 0.9 0.5 1.0" />
+        </material> 
+        <geometry>
+          <mesh filename="package://instrumented_screwdriver/meshes/screwdriver-v5.dae" scale="0.001 0.001 0.001" />
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0.071" />
+        <geometry>
+          <cylinder radius="0.03" length="0.142" />
+          <!--
+          <mesh filename="package://instrumented_screwdriver/meshes/screwdriver-v5.dae" scale="0.001 0.001 0.001" />
+          -->
+        </geometry>
+      </collision>
+  </link>
+
+  <gazebo reference="screwdriver">
+      <!--<material>Gazebo/White</material>-->
+      <turnGravityOff>false</turnGravityOff>
+      <selfCollide>false</selfCollide>
+      <!-- kp: stiffness kd: damping mu1, mu2: friction -->
+      <mu1>100.0</mu1>
+      <mu2>100.0</mu2>
+      <kp>1000000.0</kp>
+      <kd>1.0</kd>
+  </gazebo>
+
+  <link name="screwdriver_tool_bit">
+      <inertial>
+        <origin xyz="0 0 0" />
+        <mass value="0.05" />
+        <inertia  ixx="0.00002" ixy="0" ixz="0" iyy="0.00002" iyz="0" izz="0.00001" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" />
+        <material name="silver" >
+          <color rgba="0.9 0.9 0.9 1.0" />
+        </material> 
+        <geometry>
+          <cylinder radius="0.003" length="0.02" />
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" />
+        <geometry>
+          <cylinder radius="0.003" length="0.02" />
+        </geometry>
+      </collision>
+  </link>
+
+  <gazebo reference="screwdriver_tool_bit">
+      <!--<material>Gazebo/White</material>-->
+      <turnGravityOff>false</turnGravityOff>
+      <selfCollide>false</selfCollide>
+      <!-- kp: stiffness kd: damping mu1, mu2: friction -->
+      <mu1>100.0</mu1>
+      <mu2>100.0</mu2>
+      <kp>1000000.0</kp>
+      <kd>1.0</kd>
+  </gazebo>
+
+  <!-- outer marker size 0.02, actual inner marker size 6/8*0.02 = 0.015 -->
+  <!-- convex-hull cylinder: r=(0.4/2)/cos(22.5) = 0.5226 -->
+  <xacro:atag_octogon name="screwdriver_pole_octogon"
+      outer_radius="0.0305" marker_radius="0.03"  marker_size="0.02"
+      id0="20" id1="21" id2="22" id3="23" id4="24" id5="25" id6="26" id7="27" />
+
+  <joint name="screwdriver_octogon_joint" type="fixed">
+    <parent link="screwdriver" />
+    <child link="screwdriver_pole_octogon" />
+    <origin xyz="0 0 0.002" rpy="0 0 ${-3.14159/8}" />
+  </joint>
+
+  <joint name="screwdriver_tool_bit_joint" type="fixed">
+    <parent link="screwdriver" />
+    <child link="screwdriver_tool_bit" />
+    <origin xyz="0 0 -0.01" rpy="0 0 0" />
+  </joint>
+
+</robot>

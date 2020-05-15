@@ -1,0 +1,129 @@
+<?xml version="1.0" ?>
+<robot 
+       xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="pushing_box_ft">
+
+
+  <!-- basic ROS URDF model of the "pushing-box-ft" 2-DOF friction force sensor.
+
+       The sensor URDF with base-plate, and tool-plate connected by a fixed joint.
+       Note that the origin of the model is at the bottom of the *base_plate*,
+       basically in the center of the sensor.
+       Adjust the transformations from robot and to tool accordingly.
+   -->
+
+<!-- 
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ft_sensor.xacro" />
+  <xacro:ft_control_plugin name="pushing_box_ft" />
+  <xacro:ft_sensor_plugin name="pushing_box_ft" joint="${name}_fixed_joint" rate="200" topic="wrench" />
+-->
+
+<xacro:macro name="pushing_box_ft" params="name" >
+
+  <link name="${name}">
+    <inertial>
+      <origin xyz="0 0 ${0.005}" />
+      <mass value="0.05" /> <!-- roughly 50 grams (w a bit of cable) -->
+      <inertia  ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.00005" />
+    </inertial>
+    <visual>
+        <origin xyz="0 0 ${0.0}" />
+        <material name="dummy" >
+          <color rgba="0.9 0.9 0.7 1.0" />
+        </material> 
+        <geometry>
+          <mesh filename="package://tams_printed_ft/meshes/pushing-box-complete-without-probe.dae" scale="0.001 0.001 0.001" />
+        </geometry>
+    </visual>
+    <collision>
+        <origin xyz="0 0 ${0.0}" />
+        <material name="dummy" >
+          <color rgba="0.9 0.9 0.7 1.0" />
+        </material> 
+        <geometry>
+          <mesh filename="package://tams_printed_ft/meshes/pushing-box-complete-without-probe.dae" scale="0.001 0.001 0.001" />
+        </geometry>
+    </collision>
+    <!--
+    <collision>
+        <origin xyz="0 0 ${0.005}" />
+        <geometry>
+          <box size="0.08 0.08 0.01" />
+        </geometry>
+    </collision>
+    -->
+  </link>
+
+  <gazebo reference="${name}">
+      <material>Gazebo/Green</material>
+      <turnGravityOff>false</turnGravityOff>
+      <selfCollide>false</selfCollide>
+      <!-- kp: stiffness kd: damping mu1, mu2: friction -->
+      <mu1>100.0</mu1>
+      <mu2>100.0</mu2>
+      <kp>1000000.0</kp>
+      <kd>1.0</kd>
+  </gazebo>
+
+  <link name="${name}_probe">
+    <inertial>
+      <origin xyz="1 0 ${0.005/2}" />
+      <mass value="0.009" />  <!-- 2 5-cent coins 3.92 grams each-->
+      <inertia  ixx="0.00002" ixy="0" ixz="0" iyy="0.00002" iyz="0" izz="0.00001" />
+    </inertial>
+    <visual>
+        <origin xyz="0 0 0.004" /> 
+        <material name="dark_gray_coins_holder" >
+          <color rgba="0.6 0.6 0.6 1.0" />
+        </material> 
+        <geometry>
+          <mesh filename="package://tams_printed_ft/meshes/pushing-box-coins-holder.dae" scale="0.001 0.001 0.001" />
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 ${0.005/2}" />
+        <geometry>
+          <cylinder radius="${0.028/2}" length="0.005" />
+        </geometry>
+      </collision>
+  </link>
+
+  <gazebo reference="${name}_probe">
+      <material>Gazebo/White</material>
+      <turnGravityOff>false</turnGravityOff>
+      <selfCollide>false</selfCollide>
+      <!-- kp: stiffness kd: damping mu1, mu2: friction -->
+      <mu1>100.0</mu1>
+      <mu2>100.0</mu2>
+      <kp>1000000.0</kp>
+      <kd>1.0</kd>
+  </gazebo>
+
+
+  <!-- fucking controller requires a namespace followed by SLASH -->
+  <!-- type=floating, no axis required -->
+  <joint name="${name}_sensor_joint" type="prismatic">
+    <parent link="${name}" />
+    <child link="${name}_probe" />
+    <origin xyz="0.015 0.001 ${-0.001}" rpy="0 0 0" />
+
+    <axis xyz="1 0 0" rpy="0 0 0" />
+    <dynamics damping="0.1" friction="0.05" />
+    <limit lower="-0.001" upper="0.001" effort="0.1" velocity="1" />
+    <safety_controller soft_lower_limit="-0.001" soft_upper_limit="0.001" k_position="1" k_velocity="1" /> 
+  </joint>
+
+  <transmission name="${name}_sensor_joint_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${name}_sensor_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="${name}_sensor_joint_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+</xacro:macro>
+
+</robot>

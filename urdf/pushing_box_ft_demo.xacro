@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<robot 
+       xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="pushing_box_ft_demo">
+
+
+  <!-- basic ROS+gazebo demo of the "pushing_box-ft" 
+   -->
+
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ft_payload.xacro" />
+  <xacro:include filename="$(find tams_printed_ft)/urdf/pushing_box_ft.xacro" />
+  <xacro:include filename="$(find tams_printed_ft)/urdf/ft_sensor.xacro" />
+
+  <link name="world" />
+
+  <xacro:ft_control_plugin name="pushing_box_ft" />
+
+  <xacro:ft_sensor_plugin 
+     name="pushing_box_ft"
+     joint="sensor_joint" 
+     rate="200"
+     topic="wrench" >
+  </xacro:ft_sensor_plugin>
+
+  <xacro:pushing_box_ft name="pushing_box_ft" />
+
+  <joint name="world_pushing_box_ft_joint" type="fixed">
+    <parent link="world" />
+    <child link="pushing_box_ft" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+
+  <!-- this sensor is used without payload, motion is through sliding friction -->
+
+</robot>
