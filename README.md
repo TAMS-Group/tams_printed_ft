@@ -153,7 +153,7 @@ and calibration is NOT performed on the microcontrollers.
 
 ## URDF models
 
-We also provide ROS URDF models for the sensors.
+We also provide ROS URDF models for the sensors, see the `urdf`subdirectory.
 The modeling approach combines the actual (high-res) 3D meshes also used for 3D printing
 for the visual model, while a simplified geometric model (cylinder, box) is used for
 the sensor collision model.
@@ -164,7 +164,12 @@ at the bottom of the static (robot-side) sensor mesh, the sensing joint is in th
 middle of the sensor, and another tool-mount frame is provided at the upper end
 of the (tool-side) sensor mesh.
 We also provide the required yaml controller configuration files to enable
-joint_states and wrench output from Gazebo simulation.
+joint_states and wrench output from Gazebo simulation:
+
+```
+roscd tams_printed_ft
+roslaunch tams_printed_ft gazebo_all_demo.launch
+```
 
 The screenshot below shows a collection of URDF sensor models as visualized in rviz:
 
@@ -173,9 +178,20 @@ The screenshot below shows a collection of URDF sensor models as visualized in r
 For the small sensors, the tilt under load cannot be ignored, and should be modeled 
 using a generic a six-DOF joint between the base (robot side) and swiveling (tool side)
 parts of the sensor. 
+
 However, at the moment only single-axis revolute joints are used in the models;
-Gazebo will still calculate the complete wrench, but only roll is actuated, 
-pitch and yaw remain at zero.
+Gazebo will still calculate the complete wrench, but only one axis is actuated
+(e.g., roll), while the other axes (e.g. pitch and yaw) remain at zero.
+
+For the real sensor, publishing estimated deflection as `joint_states` message
+is planned, but ahd not been implemented yet. Instead, our sensor launch scripts 
+also run `static_transform_publisher` nodes that publish the required transformation
+(from sensor base part to deflecting sensor tool part) 
+to guarantee a connected tf tree along the kinematic chain. 
+By default, we use the all-zero (no deflection, no tilt) transformation, 
+but you might want to update the corresponding parameters if your sensor is mostly
+used in one orientation and payload.
+
 
 
 ## Sensor calibration
