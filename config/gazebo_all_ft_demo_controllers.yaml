@@ -1,0 +1,84 @@
+all_ft:
+  adjustable_ft:
+    # Publish all joint states -----------------------------------
+    joint_state_controller:
+      type: joint_state_controller/JointStateController
+      publish_rate: 100  
+
+    # Position Controllers ---------------------------------------
+    sensor_joint_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: adjustable_ft_sensor_joint
+      pid: {p: 100.0, i: 0.0, d: 1.0}
+
+  ati_nano17_ft:
+    # Publish all joint states -----------------------------------
+    joint_state_controller:
+      type: joint_state_controller/JointStateController
+      publish_rate: 100  
+
+    # Position Controllers ---------------------------------------
+    sensor_joint_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: ati_nano17_ft_sensor_joint
+      pid: {p: 100.0, i: 0.0, d: 1.0}
+
+  block_ft:
+    # Publish all joint states -----------------------------------
+    joint_state_controller:
+      type: joint_state_controller/JointStateController
+      publish_rate: 100  
+  
+    # Position Controllers ---------------------------------------
+    sensor_joint_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: block_ft_sensor_joint
+      pid: {p: 100.0, i: 0.0, d: 1.0}
+
+  hex9904_07mm_ft:
+    # Publish all joint states -----------------------------------
+    joint_state_controller:
+      type: joint_state_controller/JointStateController
+      publish_rate: 100  
+
+    # Position Controllers ---------------------------------------
+    sensor_joint_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: hex9904_07mm_ft_sensor_joint
+      pid: {p: 100.0, i: 0.0, d: 1.0}
+  
+  hex9904_10mm_ft:
+    # Publish all joint states -----------------------------------
+    joint_state_controller:
+      type: joint_state_controller/JointStateController
+      publish_rate: 100  
+  
+    # Position Controllers ---------------------------------------
+    sensor_joint_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: hex9904_10mm_ft_sensor_joint
+      pid: {p: 100.0, i: 0.0, d: 1.0}
+  
+  hex9904_20mm_ft:
+    # Publish all joint states -----------------------------------
+    joint_state_controller:
+      type: joint_state_controller/JointStateController
+      publish_rate: 100  
+  
+    # Position Controllers ---------------------------------------
+    sensor_joint_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: hex9904_20mm_ft_sensor_joint
+      pid: {p: 100.0, i: 0.0, d: 1.0}
+  
+  pushing_box_ft:
+    # Publish all joint states -----------------------------------
+    joint_state_controller:
+      type: joint_state_controller/JointStateController
+      publish_rate: 100  
+  
+    # Position Controllers ---------------------------------------
+    sensor_joint_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: pushing_box_ft_sensor_joint
+      pid: {p: 1.0, i: 0.0, d: 1.0}

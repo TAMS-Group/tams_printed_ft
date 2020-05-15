@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- launch the spacemouse with 10mm hat in rviz and Gazebo -->
+
+
+  <arg name="world_name" default="worlds/empty.world" /> -->
+
+
+  <!-- here, Gazebo supports namespaces, but FUCKING ROS CONTROL does not, and will not be updated
+       as all those guys with one single robot are completely happy calling everyone robot_description
+  -->
+  <param name="robot_description" 
+         command="$(find xacro)/xacro --inorder $(find tams_printed_ft)/urdf/hex9904_10mm_ft_demo.xacro" />
+
+
+  <!-- start gazebo server:  gzserver/debug-->
+  <node name="gazebo" pkg="gazebo_ros" type="gzserver" respawn="false" output="screen"
+        args="$(arg world_name)" />
+
+
+  <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen"/>
+
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <!-- <remap from="robot_description" to="adjustable_ft_demo_description" /> -->
+  </node>
+
+  <!--
+  <param name="publish_frequency" value="100"/>
+  <node name="robot_tf_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+  -->
+
+
+  <!-- spawn the robot at xzy=(-1,0,0) -->
+  <node name="spawn_hex9904_10mm_ft_demo" pkg="gazebo_ros" type="spawn_model" 
+        args="-urdf -param robot_description -x 0 -y 0 -z 0.05 -R 0 -P 0 -Y 0 -model hex9904_10mm_ft_demo" respawn="false" output="screen" />
+
+  <!-- publish world transform to tf -->
+  <node pkg="tf" type="static_transform_publisher" 
+        name="static_map_tf_publisher" args="0 0 0 0 0 0 world map 100" />
+
+
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <rosparam file="$(find tams_printed_ft)/config/gazebo_hex9904_10mm_ft_demo_controllers.yaml" command="load"/>
+
+
+  <!-- load the controllers -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" ns="hex9904_10mm_ft" args="joint_state_controller sensor_joint_position_controller" />
+
+
+ <!-- publishes robot-state, reading the urdf robot model from "doro_description",
+       subscribing to /joint_states and publishing to /tf -->
+  <node pkg="robot_state_publisher" type="state_publisher" respawn="false"
+        name="adjustable_ft_state_publisher">
+     <param name="publish_frequency" type="double" value="100.0" />
+     <param name="tf_prefix" type="string" value="" />
+     <!-- <remap from="robot_description" to="adjustable_ft_demo_description" /> -->
+     <remap from="/joint_states" to="/hex9904_10mm_ft/joint_states" />
+  </node>
+
+
+  <node name="rviz" pkg="rviz" type="rviz" respawn="false" output="screen"
+        args="-d $(find tams_printed_ft)/config/tams_printed_ft_demo.rviz" />
+
+</launch>
