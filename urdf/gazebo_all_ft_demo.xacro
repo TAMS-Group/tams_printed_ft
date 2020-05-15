@@ -143,7 +143,7 @@
   <joint name="block_ft_payload_joint" type="fixed">
     <parent link="block_ft_tool_mount" />
     <child link="m1100g" />
-    <origin xyz="0.03 0.05 0" rpy="0 0 0" />
+    <origin xyz="0.01 0.02 0.05" rpy="0 0 0" />
   </joint>
 
 
