@@ -12,7 +12,7 @@ eps = 0.01;
 fn  = 100;
 
 
-single_components = false;
+single_components = true;
 arm_2DOF = false;
 arm_3DOF = false;
 
@@ -22,8 +22,8 @@ translate( [0,0,0] )               vishay_TCST1103();
 translate( [-8*2.54, 8*2.54, 0] )  everlight_ITR1201();
 translate( [-6*2.54, 8*2.54, 0] )  rotate( [0,0,-90] )  everlight_ITR8307();
 translate( [6.5*2.54,0,0] )        everlight_ITR9809();
-translate( [0, 8*2.54,0] )         everlight_ITR9904( hull=true );
-translate( [2.54/2,2.54/2,-1.1] )  breadboard_old( w=60, h=60, z=0.8, delta=2.54, copper=true );
+translate( [0, 8*2.54,0] )         everlight_ITR9904( hull=false );
+translate( [2.54/2,2.54/2,-1.1] )  breadboard_old( w=60, h=50, z=0.8, delta=2.54, copper=true );
 }
 
 if (arm_2DOF) {
