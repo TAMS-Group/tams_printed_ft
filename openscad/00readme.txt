@@ -25,6 +25,25 @@ Vitamins / libraries are:
   breadboards; this can help for quick prototyping when you
   don't want to design and route a custom circuit board.
 
+Sensor Prototypes are:
+
+* `adjustable-ft-v1.scad` - the (large) six-axis F/T sensor
+  built with four "2-DOF sensor modules" (for a total of 
+  eight fork-type interrupter sesnors), adjustable fins
+  with grub screws, and an Arduino nano.
+
+* `bottle-ft.scad` - the ring-type prototype designed for
+  recording of human liquid pouring experiments. Inner radius
+  is large enough for a 500ml plastic bottle while the outer
+  grasp handle provides a nice grasping handle of the overall
+  sensor.
+
+* `pushing-box-ft` - the simple 2-DOF surface-friction measuring
+  device for object pushing experiments.
+
+* `...` 
+
+
 About the sensor 3D models:
 
 A single self-contained OpenSCAD file is provided for each of
