@@ -326,7 +326,7 @@ module fin_ring(
   dy = max( 0, hw-ch );
   for( i=[0,1,2,3,4,5,6,7]  ) {
     theta = fin_angles[i];
-    sign  = fin_orientation[i];
+    sign  = fin_orientations[i];
     rotate( [0,0,theta] ) 
       translate( [fin_radius, 0, h_fin_ring-eps/2] ) {
 //      cylinder( d=1, h=50, center=false, $fn=10 );

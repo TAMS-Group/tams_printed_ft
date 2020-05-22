@@ -12,7 +12,7 @@ eps = 0.01;
 fn  = 100;
 
 
-single_components = true;
+single_components = false;
 arm_2DOF = false;
 arm_3DOF = false;
 
