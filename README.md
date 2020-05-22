@@ -21,7 +21,8 @@ than 20 US dolloars, plus a few hours of 3D printing.
 
 This repository is currently a stub, as the journal paper describing the general approach
 and several key algorithms is still under review. If you are a reviewer, please don't hesitate
-to contact the authors by email for a preview of the final repository contents.
+to contact the authors (via the editors to keep your anonymity) 
+for a preview of the final repository contents.
 
 ## Getting started
 
@@ -100,15 +101,48 @@ Note that there are no header files (yet).
 
 ## Prototype sensors
 
-* !["Robocup soccer foot sensor"](/doc/images/foot.jpg)
-  A foot force sensor for a Robocup soccer humanoid;
-* !["2-DOF sensor module"](/doc/images/2dof-sensor-module.jpg)
-  A convenient sensor module built from two fork-type photointerrupters, used as a basic components
+* The most basic sensor consists of a deflecting beam mounted 
+  to a suitable support structure, with an optical distance sensor
+  (either reflex-type proximity sensor or fork-type interrupter) in between.
+  A foot force sensor for a Robocup soccer humanoid:
+
+  !["Robocup soccer foot sensor"](/doc/images/foot.jpg)
+
+  <!--
+  The OpenSCAD module described in our 
+  <a href="https://tams.informatik.uni-hamburg.de/publications/2017/3D-Printed%20Low-Cost%20Modular%20Force%20Sensors.pdf">CLAWAR 2017 paper</a>
+  can be used to dimension the cantilever for given maximum load.
+   -->
+
+* A convenient sensor module built from two fork-type photointerrupters, used as a basic components
   in several of our designs;
-* !["adjustable six-axis F/T sensor"](/doc/images/adjustable-base-ring.jpg)
-   A large six-axis force/torque sensor, using four 2-DOF sensor modules and grub-screws for initial zero-ing;
-* !["bottle-ft ring-type six-axis F/T sensor"](/doc/images/bottle-ft-pouring.jpg)
-   A ring-type six-axis force/torque sensor, using four 2-DOF sensor modules.
+
+  !["2-DOF sensor module"](/doc/images/2dof-sensor-module.jpg)
+
+* One of these modules is than used as the basis of a simple 2-DOF sensor designed
+  for measuring friction/shearing forces during object pushing experiments:
+
+  !["pushing-box F/T sensor"](openscad/pushing-box-ft.png)
+
+* All forces and torque applied to a rigid body can be integrated into one effective 
+  net force (Fx,Fy,Fz) and one couple of forces resulting in torque (Mx,My,Mz).
+  We include a large diameter six-axis force/torque sensor, using four of the 2-DOF sensor 
+  modules presented above and grub-screws for initial zero-adjustment:
+
+  !["adjustable six-axis F/T sensor"](/doc/images/adjustable-base-ring.jpg)
+
+* Unconventional shapes can be designed as well. As an example, we include 
+  a ring-type six-axis force/torque sensor, using four 2-DOF sensor modules:
+
+  !["bottle-ft ring-type six-axis F/T sensor"](/doc/images/bottle-ft-pouring.jpg)
+
+* 3D-printed springs can be designed at will, exactly matched to the task at hand.
+  As an example, we present a 3D-elastic element with three sets of orthogonal levers,
+  where force-range and torque-range can be selected individually for each axis.
+  The corresponding prototype sensor also demonstrates the use of proximity sensors
+  and a flat layout (PCB friendly) of the optical sensors and optional electronics:
+
+  !["block-ft six-axis F/T sensor"](/openscad/block-ft.png)
 
 
 ## OpenSCAD designs and 3D printing
@@ -203,4 +237,5 @@ requires to edit and configure the geometric layout between the 3D printed and t
 reference sensor in the sensor launch file(s).
 
 
+## Tips and tricks
 
