@@ -21,7 +21,7 @@ https://www.pjrc.com/teensy/td_download.html
 2)
 After installing the Arduino IDE, you may want to copy (or symlink) 
 the contents of this directory to your $HOME/Arduino folder, 
-To make the files available to your Arduino IDE installation. 
+to make the files available to your Arduino IDE installation. 
 Of course, you don't need to copy files for sensors that you don't build:
 
 # deep copy of all directories:
