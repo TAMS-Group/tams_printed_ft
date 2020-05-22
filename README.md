@@ -122,7 +122,7 @@ Note that there are no header files (yet).
 * One of these modules is than used as the basis of a simple 2-DOF sensor designed
   for measuring friction/shearing forces during object pushing experiments:
 
-  !["pushing-box F/T sensor"](openscad/pushing-box-ft.png)
+  !["pushing-box F/T sensor"](openscad/ft-pushing-box.png)
 
 * All forces and torque applied to a rigid body can be integrated into one effective 
   net force (Fx,Fy,Fz) and one couple of forces resulting in torque (Mx,My,Mz).
